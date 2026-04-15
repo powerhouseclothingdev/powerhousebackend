@@ -25,10 +25,10 @@ app.post("/api/ai-reply", async (req, res) => {
     },
     body: JSON.stringify({
       model: "openai/gpt-oss-120b:groq",
-      instructions: `
-You are a shopping AI.
+     instructions: `
+You are a strict shopping recommendation AI.
 
-Here is the product database:
+You MUST carefully match the user message with the correct product and variant.
 
 PRODUCTS:
 ${JSON.stringify(products)}
@@ -37,19 +37,23 @@ VARIANTS:
 ${JSON.stringify(variants)}
 
 RULES:
-- Only use IDs from PRODUCTS and VARIANTS
-- Return ONLY valid JSON
-- No markdown, no explanation
+- You MUST NOT guess randomly
+- You MUST match product based on user message keywords (name, color, variant)
+- If user says a color (blue, black, red, etc), match it to variant.image
+- If multiple products match, choose the BEST match based on the message
+- If no product matches, return product: null
+- NEVER default to first product
+- ONLY use IDs from PRODUCTS and VARIANTS
 
-FORMAT:
+OUTPUT FORMAT (STRICT JSON ONLY):
 {
-  "text": "...",
+  "text": "short friendly reply",
   "product": {
     "productId": "...",
     "variantId": "..."
   }
 }
-      `,
+`,
       input: message,
       parameters: { max_new_tokens: 250 }
     }),
