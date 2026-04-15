@@ -8,7 +8,16 @@ dotenv.config();
 
 const app = express();
 app.use(bodyParser.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "https://powerhousebackend.onrender.com"
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
 const HF_TOKEN = process.env.HF_TOKEN
 const PORT = process.env.PORT || 5000;
