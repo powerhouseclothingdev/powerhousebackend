@@ -8,16 +8,7 @@ dotenv.config();
 
 const app = express();
 app.use(bodyParser.json());
-app.use(
-  cors({
-    origin: [
-      "http://localhost:3000",
-      "https://powerhousebackend.onrender.com"
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
+app.use(cors());
 
 const HF_TOKEN = process.env.HF_TOKEN
 const PORT = process.env.PORT || 5000;
@@ -34,10 +25,10 @@ app.post("/api/ai-reply", async (req, res) => {
     },
     body: JSON.stringify({
       model: "openai/gpt-oss-120b:groq",
-     instructions: `
-You are a strict shopping recommendation AI.
+      instructions: `
+You are a shopping AI.
 
-You MUST carefully match the user message with the correct product and variant.
+Here is the product database:
 
 PRODUCTS:
 ${JSON.stringify(products)}
@@ -46,23 +37,19 @@ VARIANTS:
 ${JSON.stringify(variants)}
 
 RULES:
-- You MUST NOT guess randomly
-- You MUST match product based on user message keywords (name, color, variant)
-- If user says a color (blue, black, red, etc), match it to variant.image
-- If multiple products match, choose the BEST match based on the message
-- If no product matches, return product: null
-- NEVER default to first product
-- ONLY use IDs from PRODUCTS and VARIANTS
+- Only use IDs from PRODUCTS and VARIANTS
+- Return ONLY valid JSON
+- No markdown, no explanation
 
-OUTPUT FORMAT (STRICT JSON ONLY):
+FORMAT:
 {
-  "text": "short friendly reply",
+  "text": "...",
   "product": {
     "productId": "...",
     "variantId": "..."
   }
 }
-`,
+      `,
       input: message,
       parameters: { max_new_tokens: 250 }
     }),
