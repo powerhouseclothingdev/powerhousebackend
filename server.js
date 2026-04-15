@@ -40,6 +40,12 @@ RULES:
 - Only use IDs from PRODUCTS and VARIANTS
 - Return ONLY valid JSON
 - No markdown, no explanation
+- You MUST NOT guess randomly
+- You MUST match product based on user message keywords (name, color, variant)
+- If user says a color (blue, black, red, etc), match it to variant.image
+- If multiple products match, choose the BEST match based on the message
+- If no product matches, return product: null
+- NEVER default to first product
 
 FORMAT:
 {
